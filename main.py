@@ -11,7 +11,7 @@ with open("account.json", "r") as read_file:
 
 @app.get('/')
 def root():
-    return{'Modul Sign Up'}
+    return{'Silahkan tambahkan "/docs" pada url'}
 
 def check_user(user: str, password: str):
     for account in data['account']:
@@ -19,25 +19,11 @@ def check_user(user: str, password: str):
             return True
     return False
 
-@app.post("/user/signup", tags=["user"])
-async def user_signup(user: str, email:str, password: str):
+@app.post("/user/login", tags=["user"])
+async def user_login(user: str, password: str):
     if check_user(user, password):
-        return {
-            "error": "Account sudah terdaftar!"
-        }
-    else:
-        id=1
-        if(len(data['account'])>0):
-            id=data['account'][len(data['account'])-1]['id']+1
-        new_data={'id': id,'user': user,'email' : email, 'password': password}
-        data['account'].append(dict(new_data))
-        read_file.close()
-        with open("account.json", "w") as write_file:
-            json.dump(data,write_file,indent=4)
-        write_file.close()
-        return {"message": "SignUp Berhasil"}
-        raise HTTPException(
-            status_code=500, detail=f'Internal Server Error'
-            )
-
+        return signJWT(user)
+    return {
+        "error": "Wrong login details!"
+    }
 
